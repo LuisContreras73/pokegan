@@ -187,3 +187,6 @@ svg { width:18px; height:18px; flex:none; }
 .switch input::after { content:""; position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 1px 2px rgba(0,0,0,.3); }
 .switch input:checked { background:var(--accent); }
 .switch input:checked::after { left:17px; }
+.gh.li { display:inline-flex; align-items:center; gap:7px; font-family:"Segoe UI", system-ui, sans-serif; font-weight:600; }
+.gh.li b { display:inline-grid; place-items:center; width:18px; height:18px; border-radius:4px; background:#0a66c2; color:#fff;
+           font:700 11px/1 "Segoe UI", system-ui, sans-serif; }

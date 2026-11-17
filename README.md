@@ -4,7 +4,7 @@
 
 **Generación condicional de criaturas en pixel art, de frente y de espalda, a partir de su tipo.**
 
-Desarrollado por **Luis Contreras**
+Desarrollado por **Luis Contreras** · [LinkedIn](https://www.linkedin.com/in/luis-alonzo-contreras-perez/) · [GitHub](https://github.com/LuisContreras73)
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.11-EE4C2C?logo=pytorch&logoColor=white)
@@ -326,6 +326,12 @@ pérdida del modelo `pura`. DINOv3 requiere aceptar su licencia en Hugging Face.
 - **Métricas.** Inception está fuera de dominio para pixel art de 96 px; por eso el KID se acompaña de evaluadores de tipo,
   coherencia y diversidad calibrados con techo y piso reales.
 - **Un solo entrenamiento por configuración.** Las ablaciones de la §4 son diagnósticas, no un barrido estadístico.
+
+## Contacto
+
+**Luis Contreras** · [LinkedIn](https://www.linkedin.com/in/luis-alonzo-contreras-perez/) · [GitHub](https://github.com/LuisContreras73)
+
+Preguntas, comentarios y colaboraciones son bienvenidos por LinkedIn o mediante un *issue* en este repositorio.
 
 ## Cómo citar
 

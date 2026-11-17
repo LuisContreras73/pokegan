@@ -5,6 +5,7 @@ type: software
 authors:
   - family-names: "Contreras"
     given-names: "Luis"
+    website: "https://www.linkedin.com/in/luis-alonzo-contreras-perez/"
 version: "1.0.0"
 date-released: "2026-11-16"
 license: MIT
