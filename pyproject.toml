@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pokegan"
+version = "1.0.0"
+description = "GAN condicional que genera la vista frontal y trasera de criaturas nuevas a partir de su tipo"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Luis Contreras" }]
+requires-python = ">=3.10"
+dependencies = [
+  "torch>=2.2",
+  "torchvision>=0.17",
+  "numpy",
+  "pandas",
+  "pillow",
+  "pyyaml",
+  "tqdm",
+  "matplotlib",
+  "scikit-learn",
+]
+
+[project.optional-dependencies]
+# evaluación: KID/FID (Inception) y evaluador de tipos (DINOv3 / ConvNeXt); timm también para la variante vision
+eval = ["scipy", "timm>=1.0", "transformers>=4.56", "torch-fidelity==0.4.0"]
+# exportación a ONNX para la demo web
+web = ["onnx", "onnxscript", "onnxruntime"]
+# demo local (FastAPI)
+demo = ["fastapi", "uvicorn"]
+dev = ["pytest", "nbformat", "nbclient", "ipywidgets"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

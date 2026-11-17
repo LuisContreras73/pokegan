@@ -1,0 +1,61 @@
+# Afinado de forma desde el paso 24000 de runs/main: regularizadores de área visible (soporte) y
+# perímetro TV(α) (fórmula de co-área). Ver losses.alpha_shape_penalty y docs/matematica.md.
+# Uso: python scripts/train.py --config configs/forma.yaml --resume runs/main/ckpt_024000.pt --iters 27000
+name: main_forma
+seed: 0
+device: cuda
+out_dir: runs
+memory_fraction: null
+data:
+  cache: data/cache/pairs96.npz
+  val_frac: 0.05
+  species_power: 0.5
+  combo_power: 0.25
+  shiny_factor: 0.5
+  flip_p: 0.5
+G:
+  ch: 32
+  z_dim: 120
+  n_chunks: 6
+  emb_dim: 128
+  attn: true
+D:
+  ch: 32
+  attn: true
+train:
+  iters: 40000
+  batch: 64
+  lr_g: 0.0001
+  lr_d: 0.0004
+  betas:
+  - 0.0
+  - 0.999
+  eps: 1.0e-06
+  t_start_frac: 0.1
+  t_end_frac: 0.4
+  mis_weight: 0.5
+  fake_weight: 1.0
+  mis_mode: pair
+  n_dis: 2
+  lecam_weight: 0.3
+  lecam_decay: 0.99
+  lecam_start: 9600
+  ms_weight: 0.0
+  ema_decay: 0.999
+  ema_start: 1000
+  aug:
+    translation: 0.125
+    cutout: 0.5
+  max_hours: null
+  alpha_area_weight: 2.0
+  alpha_tv_weight: 3.0
+  alpha_min_area: 240.0
+  alpha_tv_target: 0.04
+log:
+  log_every: 100
+  sample_every: 500
+  ckpt_every: 1000
+  eval_every: 1000
+  eval_n: 2000
+  keep_ckpts: 4
+  grid_z: 4

@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Si usas este código, los pesos o los resultados, cítalo de esta forma."
+title: "PokeGAN: generación condicional de criaturas de frente y de espalda a partir de su tipo"
+type: software
+authors:
+  - family-names: "Contreras"
+    given-names: "Luis"
+version: "1.0.0"
+date-released: "2026-11-16"
+license: MIT
+repository-code: "https://github.com/LuisContreras73/pokegan"
+url: "https://luiscontreras73.github.io/pokegan/"
+keywords:
+  - generative adversarial networks
+  - conditional GAN
+  - multi-view generation
+  - pixel art
+  - BigGAN

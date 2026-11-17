@@ -1,0 +1,48 @@
+# Entrenamiento principal (arquitectura y pérdidas: docs/matematica.md)
+name: main
+seed: 0
+device: cuda
+out_dir: runs
+memory_fraction: null          # p. ej. 0.45 si se comparte la GPU con otro proceso
+
+data:
+  cache: data/cache/pairs96.npz
+  val_frac: 0.05               # 5 % de ESPECIES retenidas (diagnóstico r_v, novedad, clasificador)
+  species_power: 0.5           # w ∝ n_pares(especie)^-0.5
+  combo_power: 0.25            #   · n_especies(combo)^-0.25
+  shiny_factor: 0.5            #   · 0.5 si es shiny
+  flip_p: 0.5                  # volteo horizontal conjunto de reales
+
+G: {ch: 32, z_dim: 120, n_chunks: 6, emb_dim: 128, attn: true}
+D: {ch: 32, attn: true}
+
+train:
+  iters: 40000                 # se ajusta tras el benchmark (it/s × horas disponibles)
+  batch: 64
+  lr_g: 1.0e-4
+  lr_d: 4.0e-4                 # TTUR
+  betas: [0.0, 0.999]
+  eps: 1.0e-6
+  t_start_frac: 0.1            # transición incondicional→condicional (λ_t)
+  t_end_frac: 0.4
+  mis_weight: 0.5              # peso del término desajustado (frente_i + espalda_j de otra especie)
+  fake_weight: 1.0             # con mis_mode pair: reales y falsos a peso 1 (equilibrio q = p)
+  mis_mode: pair               # desajustado relativista: relu(1 − C_real,i + C_mis,i), sin deriva de sesgo
+  n_dis: 2                     # pasos de D por paso de G (BigGAN); con 1, G supera a D al inicio
+  lecam_weight: 0.3
+  lecam_decay: 0.99
+  lecam_start: 9600            # LeCam solo con λ_t = 1 (no perturbar la rampa del tipo)
+  ms_weight: 0.0               # MSGAN (respaldo si hay colapso: 1.0)
+  ema_decay: 0.999
+  ema_start: 1000
+  aug: {translation: 0.125, cutout: 0.5}
+  max_hours: null
+
+log:
+  log_every: 100
+  sample_every: 500
+  ckpt_every: 2000
+  eval_every: 5000
+  eval_n: 2000
+  keep_ckpts: 3
+  grid_z: 4

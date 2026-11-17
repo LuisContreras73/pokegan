@@ -1,0 +1,65 @@
+# Prueba de humo en CPU (segundos): mismo código, modelo y datos diminutos.
+name: smoke
+seed: 0
+device: cpu
+out_dir: runs
+memory_fraction: null
+data:
+  cache: data/cache/pairs96.npz
+  val_frac: 0.05
+  species_power: 0.5
+  combo_power: 0.25
+  shiny_factor: 0.5
+  flip_p: 0.5
+  limit: 64
+G:
+  ch: 8
+  z_dim: 120
+  n_chunks: 6
+  emb_dim: 16
+  attn: true
+  spatial_z: true
+D:
+  ch: 8
+  attn: true
+train:
+  iters: 4
+  batch: 8
+  lr_g: 0.0001
+  lr_d: 0.0004
+  betas:
+  - 0.0
+  - 0.999
+  eps: 1.0e-06
+  t_start_frac: 0.25
+  t_end_frac: 0.5
+  mis_weight: 0.5
+  fake_weight: 1.0
+  mis_mode: pair
+  n_dis: 2
+  lecam_weight: 0.3
+  lecam_decay: 0.99
+  lecam_start: 0
+  ms_weight: 1.0
+  ema_decay: 0.999
+  ema_start: 0
+  aug:
+    translation: 0.125
+    cutout: 0.5
+  max_hours: null
+  multiscale:
+    scales:
+    - 48
+    - 24
+    mask: true
+    weight: 1.0
+  alpha_area_weight: 1.0
+  alpha_tv_weight: 1.0
+log:
+  log_every: 1
+  sample_every: 2
+  ckpt_every: 2
+  eval_every: 0
+  eval_n: 64
+  keep_ckpts: 2
+  grid_z: 2

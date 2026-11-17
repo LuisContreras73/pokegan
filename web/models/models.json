@@ -1,0 +1,94 @@
+{
+ "z_dim": 120,
+ "n_chunks": 6,
+ "types": [
+  [
+   "normal",
+   "Normal"
+  ],
+  [
+   "fighting",
+   "Lucha"
+  ],
+  [
+   "flying",
+   "Volador"
+  ],
+  [
+   "poison",
+   "Veneno"
+  ],
+  [
+   "ground",
+   "Tierra"
+  ],
+  [
+   "rock",
+   "Roca"
+  ],
+  [
+   "bug",
+   "Bicho"
+  ],
+  [
+   "ghost",
+   "Fantasma"
+  ],
+  [
+   "steel",
+   "Acero"
+  ],
+  [
+   "fire",
+   "Fuego"
+  ],
+  [
+   "water",
+   "Agua"
+  ],
+  [
+   "grass",
+   "Planta"
+  ],
+  [
+   "electric",
+   "Eléctrico"
+  ],
+  [
+   "psychic",
+   "Psíquico"
+  ],
+  [
+   "ice",
+   "Hielo"
+  ],
+  [
+   "dragon",
+   "Dragón"
+  ],
+  [
+   "dark",
+   "Siniestro"
+  ],
+  [
+   "fairy",
+   "Hada"
+  ]
+ ],
+ "models": [
+  {
+   "key": "vision",
+   "label": "Vision",
+   "step": 28000,
+   "file": "models/vision.onnx",
+   "mb": 16.1
+  },
+  {
+   "key": "pura",
+   "label": "Pura",
+   "step": 27000,
+   "file": "models/pura.onnx",
+   "mb": 16.1
+  }
+ ]
+}

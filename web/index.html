@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PokeGAN — crea una criatura</title>
+<meta name="description" content="GAN condicional que genera la vista frontal y trasera de criaturas nuevas a partir de su tipo. Se ejecuta en el navegador.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="lab">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2l2.2 6.1L20 10l-5.8 1.9L12 18l-2.2-6.1L4 10l5.8-1.9z" fill="currentColor"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" fill="currentColor"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><circle cx="16" cy="16" r="1.6" fill="currentColor"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/><circle cx="8" cy="16" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><g fill="currentColor"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="9.5" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="9.5" width="5" height="5" rx="1"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><rect x="16" y="9.5" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><rect x="9.5" y="16" width="5" height="5" rx="1"/><rect x="16" y="16" width="5" height="5" rx="1"/></g></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4L3 8l4 4M3 8h14M17 12l4 4-4 4M21 16H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<header class="bar">
+  <a class="brand" href="./" aria-label="PokeGAN, inicio"><canvas id="mascot" width="10" height="8" aria-hidden="true"></canvas><canvas id="wordmark" aria-hidden="true"></canvas></a>
+  <nav><div class="themes" id="themes" role="group" aria-label="Tema"></div>
+    <a class="gh" href="https://github.com/LuisContreras73/pokegan">Código ↗</a></nav>
+</header>
+
+<main class="layout">
+  <aside class="controls">
+    <h1>Crea una criatura.</h1>
+    <p class="lede">Elige su tipo y genera. El modelo dibuja su <b>frente</b> y su <b>espalda</b> desde un mismo vector latente.</p>
+
+    <div class="tpair">
+      <div><div class="lbl">Tipo principal</div><div class="tsel" id="tsel0"></div></div>
+      <button class="swap" id="swap" type="button" title="Intercambiar tipos"><svg><use href="#i-swap"/></svg></button>
+      <div><div class="lbl">Segundo tipo</div><div class="tsel" id="tsel1"></div></div>
+    </div>
+    <div class="unseen" id="unseen" hidden>Combinación inédita: el modelo nunca la vio en el entrenamiento.</div>
+
+    <div class="lbl">Modelo</div>
+    <div class="seg" id="model"></div>
+    <p class="hint" id="modelHint"></p>
+
+    <div class="lbl">Semilla <span>misma semilla, mismas criaturas</span></div>
+    <input id="seed" type="number" min="0" value="0" aria-label="Semilla">
+
+    <div class="lbl">Cuántas</div>
+    <div class="seg" id="count"></div>
+
+    <details class="more"><summary>Muestreo avanzado</summary>
+      <div class="seg" id="mode"></div>
+      <p class="hint">«Fidelidad» recorta los valores extremos de z en los bloques de forma: siluetas más limpias, algo menos de variedad.</p>
+    </details>
+
+    <button class="primary" id="go" type="button"><svg><use href="#i-spark"/></svg>Generar criaturas</button>
+    <div class="actions">
+      <button class="secondary" id="surprise" type="button" title="Tipos y semilla al azar"><svg><use href="#i-dice"/></svg>Sorpréndeme</button>
+      <button class="secondary" id="all18" type="button" title="Mantiene la misma criatura y prueba los 18 tipos"><svg><use href="#i-grid"/></svg>Los 18 tipos</button>
+    </div>
+    <div class="progress" id="bar"><i></i></div>
+    <div class="status" id="status">Cargando…</div>
+  </aside>
+
+  <section class="main">
+    <div class="toolbar" id="toolbar"></div>
+    <div class="stage" id="stage"><div class="empty">Preparando el generador…</div></div>
+    <div class="info" id="info" hidden></div>
+    <div class="ghead"><h3 id="gtitle">Criaturas</h3><span class="meta" id="gmeta"></span></div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+</main>
+
+<section class="about">
+  <div><h3>Un z, dos vistas</h3><p>El generador (8,4 M parámetros, estilo BigGAN) comparte un tronco y termina en dos cabezas:
+    frente y espalda salen del mismo vector latente, con la misma paleta y anatomía. La coherencia de paleta de cada ficha se
+    mide aquí mismo, con la métrica del proyecto.</p></div>
+  <div><h3>El tipo es la única condición</h3><p>Los tipos entran como suma de embeddings en cada BatchNorm condicional, así que
+    también funcionan combinaciones que no existen en los datos. «Los 18 tipos» fija el vector latente y solo cambia el tipo.</p></div>
+  <div><h3>En tu navegador</h3><p>El generador se exportó a ONNX y corre con ONNX Runtime Web (WebGPU si está disponible, si no
+    WebAssembly). Nada se envía a un servidor. Los estilos de sprite son solo de visualización; «Original» es la salida cruda.</p></div>
+</section>
+<footer>Las criaturas, sus nombres, el logo y los íconos son originales de este proyecto. Pokémon es una marca de Nintendo,
+  Creatures Inc. y GAME FREAK inc.; este es un proyecto académico sin afiliación. Código bajo licencia MIT.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.1/dist/ort.webgpu.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

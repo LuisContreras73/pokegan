@@ -1,0 +1,67 @@
+# Variante asistida + RUTA ESPACIAL para z1..z4 (corrige la subutilización del latente medida en results/uso_latente.png).
+# Uso: python scripts/train.py --config configs/vision_z.yaml --resume runs/main/final_vision.pt --iters 29500 --max-hours 0.25
+name: main_vision_z
+seed: 0
+device: cuda
+out_dir: runs
+memory_fraction: null
+data:
+  cache: data/cache/pairs96.npz
+  val_frac: 0.05
+  species_power: 0.5
+  combo_power: 0.25
+  shiny_factor: 0.5
+  flip_p: 0.5
+G:
+  ch: 32
+  z_dim: 120
+  n_chunks: 6
+  emb_dim: 128
+  attn: true
+  spatial_z: true
+D:
+  ch: 32
+  attn: true
+train:
+  iters: 40000
+  batch: 64
+  lr_g: 0.0001
+  lr_d: 0.0004
+  betas:
+  - 0.0
+  - 0.999
+  eps: 1.0e-06
+  t_start_frac: 0.1
+  t_end_frac: 0.4
+  mis_weight: 0.5
+  fake_weight: 1.0
+  mis_mode: pair
+  n_dis: 2
+  lecam_weight: 0.3
+  lecam_decay: 0.99
+  lecam_start: 9600
+  ms_weight: 0.0
+  ema_decay: 0.999
+  ema_start: 1000
+  aug:
+    translation: 0.125
+    cutout: 0.5
+  max_hours: null
+  alpha_area_weight: 2.0
+  alpha_tv_weight: 3.0
+  alpha_min_area: 240.0
+  alpha_tv_target: 0.04
+  vision_d:
+    backbone: convnext_tiny.fb_in22k_ft_in1k
+    res: 160
+    weight: 1.0
+    lr: 0.0002
+  zmap_lr_mult: 10.0
+log:
+  log_every: 100
+  sample_every: 500
+  ckpt_every: 1000
+  eval_every: 1000
+  eval_n: 2000
+  keep_ckpts: 4
+  grid_z: 4
