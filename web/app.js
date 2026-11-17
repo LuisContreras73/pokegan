@@ -63,7 +63,7 @@ const MODEL_INFO = {
   vision: ["Vision", "Mejor anatomía. Entrenado con un discriminador auxiliar sobre ConvNeXt preentrenado; el generador es el mismo."],
   pura: ["Pura", "Generador y discriminador entrenados 100 % desde cero."],
 };
-const UI_DEFAULT = { theme: "lab", layout: "ficha", bg: "tipo", scale: "3", sprite: "original", shadow: "on" };
+const UI_DEFAULT = { theme: "lab", layout: "combate", bg: "escena", scale: "3", sprite: "original", shadow: "on" };
 
 ort.env.wasm.wasmPaths = ORT_CDN;
 ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
@@ -74,7 +74,7 @@ const autotest = new URLSearchParams(location.search).has("autotest");
 let META = null;
 const SESSIONS = {};
 let ui = { ...UI_DEFAULT };
-try { ui = { ...UI_DEFAULT, ...JSON.parse(localStorage.getItem("pokegan-ui") || "{}") }; } catch {}
+try { ui = { ...UI_DEFAULT, ...JSON.parse(localStorage.getItem("pokegan-ui-v2") || "{}") }; } catch {}
 const st = { model: "vision", types: ["fire", "flying"], n: 6, fid: false, creatures: [], sel: 0, all18: false, seed: 0 };
 let flipTimer = null;
 
@@ -228,7 +228,7 @@ function coherence(c) { const a = hist512(c.front), b = hist512(c.back); let s =
 // ---------- interfaz ----------
 function status(msg) { $("status").textContent = msg; }
 function busy(on) { for (const id of ["go", "all18", "surprise"]) $(id).disabled = on; }
-function saveUI() { try { localStorage.setItem("pokegan-ui", JSON.stringify(ui)); } catch {} }
+function saveUI() { try { localStorage.setItem("pokegan-ui-v2", JSON.stringify(ui)); } catch {} }
 function setTypeVars(node, types) {
   node.style.setProperty("--t1", TYPE_COLORS[types[0]]);
   node.style.setProperty("--t2", TYPE_COLORS[types[1] || types[0]]);
@@ -257,18 +257,6 @@ function typeIconURL(t) {
   return (ICON_CACHE[t] = c.toDataURL());
 }
 function iconHTML(t) { return `<img class="ticon" src="${typeIconURL(t)}" alt="">`; }
-function drawMascot() {
-  const px = ["....tt....", "...XtXX...", "..XXXXXX..", ".XXoXXoXX.", ".XXXXXXXX.", ".XXXXXXXX.", "..XXXXXX..", "..XX..XX.."];
-  const ctx = $("mascot").getContext("2d"), retro = document.body.dataset.theme === "retro";
-  ctx.clearRect(0, 0, 10, 8);
-  for (let y = 0; y < 8; y++) for (let x = 0; x < 10; x++) {
-    const ch = px[y][x];
-    if (ch === ".") continue;
-    ctx.fillStyle = retro ? (ch === "X" ? "#306230" : "#0f380f")
-      : ch === "o" ? "#1d1d28" : ch === "t" ? TYPE_COLORS[st.types[1] || st.types[0]] : TYPE_COLORS[st.types[0]];
-    ctx.fillRect(x, y, 1, 1);
-  }
-}
 function drawWordmark() {
   const word = "POKEGAN", cv = $("wordmark"), W = word.length * 8 + 2, H = 11, retro = document.body.dataset.theme === "retro";
   cv.width = W; cv.height = H; cv.style.width = `${W * 4}px`;
@@ -311,7 +299,7 @@ function buildThemes() {
     box.appendChild(b);
   }
 }
-function applyTheme() { document.body.dataset.theme = ui.theme; setTypeVars(document.body, st.types); drawMascot(); drawWordmark(); }
+function applyTheme() { document.body.dataset.theme = ui.theme; setTypeVars(document.body, st.types); drawWordmark(); }
 
 function typeChanged() { buildTypeSelects(); applyTheme(); }
 function closeMenus(except) { document.querySelectorAll(".tpop").forEach((p) => { if (p !== except) p.hidden = true; }); }

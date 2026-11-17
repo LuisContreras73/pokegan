@@ -94,10 +94,50 @@ def toposort(nodes: list, available: set) -> list:
     return out
 
 
+def make_logo(seed: int = 2024, index: int = 15) -> None:
+    """Logotipo de la web: una criatura Fuego/Volador generada por el propio modelo vision (no es un personaje existente).
+
+    Recorta el primer plano (fondo blanco conectado al borde → transparente) y guarda web/assets/logo.png.
+    """
+    from PIL import Image
+
+    from pokegan.sample import make_y, make_z, render
+
+    G, info = load_generator(ROOT / "weights" / "pokegan_vision.pt", device="cpu")
+    z, y = make_z(index + 1, 120, seed), make_y(["fire", "flying"], index + 1, seed)
+    img = render(G, z, y, lam=info["lam"], device="cpu")[index, 0]          # vista frontal, uint8 [96, 96, 3]
+    white = img.min(axis=2) >= 235
+    bg = np.zeros_like(white)
+    stack = [(r, c) for r in range(96) for c in (0, 95)] + [(r, c) for c in range(96) for r in (0, 95)]
+    while stack:
+        r, c = stack.pop()
+        if 0 <= r < 96 and 0 <= c < 96 and white[r, c] and not bg[r, c]:
+            bg[r, c] = True
+            stack += [(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)]
+    rows, cols = np.where(~bg)
+    r0, r1, c0, c1 = rows.min(), rows.max() + 1, cols.min(), cols.max() + 1
+    side = max(r1 - r0, c1 - c0) + 2
+    rgba = np.zeros((side, side, 4), np.uint8)
+    oy, ox = (side - (r1 - r0)) // 2, (side - (c1 - c0)) // 2
+    rgba[oy:oy + r1 - r0, ox:ox + c1 - c0, :3] = img[r0:r1, c0:c1]
+    rgba[oy:oy + r1 - r0, ox:ox + c1 - c0, 3] = np.where(bg[r0:r1, c0:c1], 0, 255)
+    (ROOT / "web" / "assets").mkdir(parents=True, exist_ok=True)
+    Image.fromarray(rgba).save(ROOT / "web" / "assets" / "logo.png")
+    print(f"  logo: web/assets/logo.png ({side}×{side} px, semilla {seed}, muestra {index})")
+
+
 def main() -> None:
+    import argparse
+
     import onnxruntime as ort
 
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--solo-logo", action="store_true", help="regenera solo web/assets/logo.png")
+    a = ap.parse_args()
     torch.set_num_threads(4)
+    make_logo()
+    if a.solo_logo:
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     meta = {"z_dim": 120, "n_chunks": 6, "types": [[t, T.TYPES_ES[t]] for t in T.TYPES], "models": []}
     for key, (label, path) in MODELS.items():

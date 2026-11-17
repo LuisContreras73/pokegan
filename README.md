@@ -4,6 +4,8 @@
 
 **Generación condicional de criaturas en pixel art, de frente y de espalda, a partir de su tipo.**
 
+Desarrollado por **Luis Contreras**
+
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.11-EE4C2C?logo=pytorch&logoColor=white)
 ![ONNX Runtime Web](https://img.shields.io/badge/demo-ONNX%20Runtime%20Web-005CED)
